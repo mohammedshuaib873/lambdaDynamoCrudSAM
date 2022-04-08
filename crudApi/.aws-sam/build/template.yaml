@@ -1,0 +1,109 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'crudLambdaDynamoDb
+
+  Sample SAM Template for crudLambdaDynamoDb
+
+  '
+Globals:
+  Function:
+    Timeout: 10
+Resources:
+  FetchAllEmployees:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: FetchAllEmployees
+      Handler: app.FetchAllEmployees
+      Runtime: nodejs14.x
+      Architectures:
+      - x86_64
+      Events:
+        FetchAllUsers:
+          Type: Api
+          Properties:
+            Path: /FetchAllEmployees
+            Method: GET
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: EmployeesTable
+    Metadata:
+      SamResourceId: FetchAllEmployees
+  createEmployee:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: createEmployee
+      Handler: app.createEmployee
+      Runtime: nodejs14.x
+      Architectures:
+      - x86_64
+      Events:
+        createEmployee:
+          Type: Api
+          Properties:
+            Path: /createEmployee
+            Method: POST
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: EmployeesTable
+    Metadata:
+      SamResourceId: createEmployee
+  deleteEmployee:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: deleteEmployee
+      Handler: app.deleteEmployee
+      Runtime: nodejs14.x
+      Architectures:
+      - x86_64
+      Events:
+        deleteEmployee:
+          Type: Api
+          Properties:
+            Path: /deleteEmployee/{id}
+            Method: DELETE
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: EmployeesTable
+    Metadata:
+      SamResourceId: deleteEmployee
+  updateEmployee:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: updateEmployee
+      Handler: app.updateEmployee
+      Runtime: nodejs14.x
+      Architectures:
+      - x86_64
+      Events:
+        updateEmployee:
+          Type: Api
+          Properties:
+            Path: /updateEmployee/{id}
+            Method: PUT
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: EmployeesTable
+    Metadata:
+      SamResourceId: updateEmployee
+  EmployeesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: employeeDetails
+      AttributeDefinitions:
+      - AttributeName: id
+        AttributeType: S
+      KeySchema:
+      - AttributeName: id
+        KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+Outputs:
+  WebEndPoint:
+    Description: REST API
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/

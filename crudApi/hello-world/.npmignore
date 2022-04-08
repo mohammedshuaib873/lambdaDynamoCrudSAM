@@ -1,0 +1,4 @@
+tests/*
+# package directories
+node_modules
+aws-sam
